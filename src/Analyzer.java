@@ -3,7 +3,7 @@
  */
 //this class has functions which can analyze results given by the simulator
 //we did not use the features of this class for our analysis (we used Excel),
-//but this class models provides many of the same capabilities
+//but this class provides many of the same capabilities
 import java.util.*;
 public class Analyzer {
     //the payout ratio for each outcome

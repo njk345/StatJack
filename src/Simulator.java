@@ -2,16 +2,15 @@
  * Created by njk on 5/24/16
  */
 
-import java.util.*;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 public class Simulator {
     public static final double DECK_REFILL_RATIO_LEFT = 0.25;
     public static final int NUM_DECKS = 1;
     public static final String OUTPUT_FILE = "blackjack.out";
-
-    public enum Outcome {
-        USER_WIN, DEALER_WIN, USER_BLACKJACK, DEALER_BLACKJACK, TIE
-    }
 
     public static void main(String[] args) {
         Scanner s = new Scanner(System.in);
@@ -21,9 +20,10 @@ public class Simulator {
         System.out.print("Count Cards? (y/n) ");
         String r = s.nextLine().toLowerCase();
         System.out.println("Simulating...");
-        simGames(r.equals("y")? new CardCountingUser(CardCountingUser.Strategy.HI_LO) : new SimpleUser(), g);
+        simGames(r.equals("y") ? new CardCountingUser(CardCountingUser.Strategy.HI_LO) : new SimpleUser(), g);
         System.out.println("Done Simulating " + g + " Games -- Results Saved At " + OUTPUT_FILE);
     }
+
     public static void simGames(Player user, int numGames) {
         ArrayList<int[]> results = new ArrayList<>();
         Deck deck = new Deck(NUM_DECKS);
@@ -36,14 +36,14 @@ public class Simulator {
             bw.write(analysis);
             bw.newLine();
             for (int[] r : results) {
-                for (int i = 0; i < r.length-2; i++) {
+                for (int i = 0; i < r.length - 2; i++) {
                     bw.write(r[i] + ",");
                 }
-                if (r[r.length-2] != Integer.MAX_VALUE) {
+                if (r[r.length - 2] != Integer.MAX_VALUE) {
                     //only write card count to file if user is counting cards
-                    bw.write(r[r.length-2] + ",");
+                    bw.write(r[r.length - 2] + ",");
                 }
-                bw.write(Outcome.values()[r[r.length-1]].name());
+                bw.write(Outcome.values()[r[r.length - 1]].name());
                 bw.newLine();
             }
             bw.close();
@@ -95,14 +95,18 @@ public class Simulator {
                 } else {//do a final total comparison
                     int userTotal = user.getHand().getTotal();
                     int dealerTotal = Dealer.getHand().getTotal();
-                    outcome = userTotal > dealerTotal? Outcome.USER_WIN : userTotal == dealerTotal?
+                    outcome = userTotal > dealerTotal ? Outcome.USER_WIN : userTotal == dealerTotal ?
                             Outcome.TIE : Outcome.DEALER_WIN;
                 }
             }
         }
         user.seeDealerHand(Dealer.getHand());
         return new int[]{user.getHand().size(), Dealer.getHand().size(),
-                         user.getHand().getTotal(), Dealer.getHand().getTotal(),
-                         countComingIn, outcome.ordinal()};
+                user.getHand().getTotal(), Dealer.getHand().getTotal(),
+                countComingIn, outcome.ordinal()};
+    }
+
+    public enum Outcome {
+        USER_WIN, DEALER_WIN, USER_BLACKJACK, DEALER_BLACKJACK, TIE
     }
 }
